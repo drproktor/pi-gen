@@ -10,7 +10,19 @@ chmod +x install-node-red.sh
 popd
 rm -rf ${TMP_DIR}
 
-sudo sed -i -e s/^User=.*$/User=node-red/ -e s/^Group=.*$/Group=node-red/ -e s/^WorkingDirectory=.*$/WorkingDirectory=\/opt\/node-red/ /lib/systemd/system/nodered.service
+# Copy initial node-red folder to node-red user
+sudo -u node-red rsync -avz ${HOME}/.node-red /opt/node-red
+
+# Remove local node-red folder
+rm -rf ${HOME}/.node-red
+
+# Fix systemd service user & group
+sudo systemctl stop nodered.service
+sudo sed -i -e 's/^User=.*$/User=node-red/' -e 's/^Group=.*$/Group=node-red/' -e 's/^WorkingDirectory=.*$/WorkingDirectory=\/opt\/node-red/' /lib/systemd/system/nodered.service
+sudo systemctl daemon-reload
+
+# Enable nodered after booting
 sudo systemctl enable nodered.service
 
-
+# Start nodered
+sudo systemctl start nodered.service

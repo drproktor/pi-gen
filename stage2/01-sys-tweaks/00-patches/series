@@ -3,3 +3,5 @@
 04-inputrc.diff
 05-path.diff
 07-resize-init.diff
+10-i2c-uart-enable.diff
+11-disable-serial0.diff

@@ -1,6 +1,6 @@
 #!/bin/bash -e
 
-sudo apt update && sudo apt upgrade
+sudo apt update && sudo apt upgrade --assume-yes
 
 TMP_DIR=$(mktemp -d)
 pushd ${TMP_DIR}
@@ -9,12 +9,6 @@ chmod +x install-node-red.sh
 ./install-node-red.sh --confirm-install --confirm-pi
 popd
 rm -rf ${TMP_DIR}
-
-# Copy initial node-red folder to node-red user
-sudo -u node-red rsync -avz ${HOME}/.node-red /opt/node-red
-
-# Remove local node-red folder
-rm -rf ${HOME}/.node-red
 
 # Fix systemd service user & group
 sudo systemctl stop nodered.service
@@ -26,3 +20,8 @@ sudo systemctl enable nodered.service
 
 # Start nodered
 sudo systemctl start nodered.service
+
+# Add github to known_hosts for Node-Red projects
+sudo -u node-red mkdir -p opt/node-red/.ssh/
+sudo -u node-red chmod 700 /opt/node-red/.ssh/
+sudo -u node-red ssh-keyscan -H github.com >> /opt/node-red/.ssh/known_hosts

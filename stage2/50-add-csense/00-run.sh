@@ -18,6 +18,7 @@ if ! id -u node-red >/dev/null 2>&1; then
 			--gecos "User for Node RED" \
 			--home /opt/node-red \
             node-red
+	usermod -a -G gpio,i2c node-red
 fi
 EOF
 
@@ -28,4 +29,22 @@ chmod +x /home/${FIRST_USER_NAME}/install-and-setup-node-red.sh
 chown ${FIRST_USER_NAME}:${FIRST_USER_NAME} /home/${FIRST_USER_NAME}/install-and-setup-node-red.sh
 EOF
 
-# install -m 644 files/resolv.conf "${ROOTFS_DIR}/etc/"
+# Copy node-red files. Note this is simply a snapshot of the latest reference setup
+cp -a files/node-red/ "${ROOTFS_DIR}/opt/node-red/"
+on_chroot << EOF
+mv /opt/node-red/node-red/ /opt/node-red/.node-red
+chown -R node-red:node-red /opt/node-red/.node-red
+EOF
+
+# Enable i2c after boot. This is required in addition to the modification of /boot/config.txt
+on_chroot << EOF
+echo i2c-dev >> /etc/modules
+EOF
+
+# Copy csense
+install -m 644 files/as73211-0.1.1-armhf.deb "${ROOTFS_DIR}/home/${FIRST_USER_NAME}/"
+on_chroot << EOF
+apt install /home/${FIRST_USER_NAME}/as73211-0.1.1-armhf.deb --yes
+rm /home/${FIRST_USER_NAME}/as73211-0.1.1-armhf.deb
+EOF
+

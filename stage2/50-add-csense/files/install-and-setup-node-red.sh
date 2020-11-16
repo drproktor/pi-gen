@@ -22,6 +22,6 @@ sudo systemctl enable nodered.service
 sudo systemctl start nodered.service
 
 # Add github to known_hosts for Node-Red projects
-sudo -u node-red mkdir -p opt/node-red/.ssh/
+sudo -u node-red mkdir -p /opt/node-red/.ssh/
 sudo -u node-red chmod 700 /opt/node-red/.ssh/
-sudo -u node-red ssh-keyscan -H github.com >> /opt/node-red/.ssh/known_hosts
+sudo -u node-red bash -c 'ssh-keyscan -H github.com >> /opt/node-red/.ssh/known_hosts'

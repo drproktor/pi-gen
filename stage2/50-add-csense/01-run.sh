@@ -54,3 +54,7 @@ on_chroot << EOF
 ln -s /lib/systemd/system/watchdog.service /etc/systemd/system/multi-user.target.wants/
 systemctl enable watchdog
 EOF
+
+if [ -f "files/default-ssids.txt" ]; then
+    cat files/default-ssids.txt >> "${ROOTFS_DIR}/etc/wpa_supplicant/wpa_supplicant.conf"
+fi

@@ -48,3 +48,9 @@ apt install /home/${FIRST_USER_NAME}/as73211-0.1.1-armhf.deb --yes
 rm /home/${FIRST_USER_NAME}/as73211-0.1.1-armhf.deb
 EOF
 
+# Watchdog
+install -m 644 files/watchdog.conf "${ROOTFS_DIR}/etc/"
+on_chroot << EOF
+ln -s /lib/systemd/system/watchdog.service /etc/systemd/system/multi-user.target.wants/
+systemctl enable watchdog
+EOF
